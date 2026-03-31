@@ -1,0 +1,21 @@
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Poppins', sans-serif;
+  background: #fff;
+  color: #1a1a2e;
+  overflow-x: hidden;
+}
+:root {
+  --pink: #ff3f6c;
+  --pink-light: #fff0f3;
+  --orange: #ff6b35;
+  --saffron: #ff9500;
+  --green: #03a685;
+  --dark: #1a1a2e;
+  --gray: #696b79;
+  --light-gray: #f5f5f6;
+  --border: #eaeaec;
+  --white: #ffffff;
+}
+input, button, textarea { font-family: 'Poppins', sans-serif; }
