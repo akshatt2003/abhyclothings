@@ -4,29 +4,36 @@ import LogoIcon from "../assets/logo.png";
 export default function Footer() {
   const [isMobile, setIsMobile] = useState(false);
 
-  // Handle window resizing for responsive layouts
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
-    handleResize(); // Initial check
+    handleResize();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const cols = [
+  const handleShopLink = (tab) => {
+    window.dispatchEvent(new CustomEvent("setProductTab", { detail: tab }));
+    const el = document.getElementById("products");
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
+  const shopLinks = [
+    { label: "Men", tab: "Men" },
+    { label: "Women", tab: "Women" },
+    { label: "Kids", tab: "Kids" },
+    { label: "Home & Living", tab: "Home" },
+    { label: "Beauty", tab: "Beauty" },
+    { label: "Sale", tab: "Sale" },
+  ];
+
+  const socialLinks = [
     {
-      title: "ONLINE SHOPPING",
-      links: ["Men", "Women", "Kids", "Home & Living", "Beauty", "Gift Cards"],
+      label: "📘 Facebook",
+      href: "https://www.facebook.com/share/1DqinGvxcq/",
     },
     {
-      title: "CUSTOMER POLICIES",
-      links: [
-        "Contact Us",
-        "FAQ",
-        "T&C",
-        "Privacy Policy",
-        "Grievance Redressal",
-        "Return Policy",
-      ],
+      label: "📸 Instagram",
+      href: "https://www.instagram.com/ashokkumar.bairwa.106?igsh=dGZ1Nmk2NHh3d3hm",
     },
   ];
 
@@ -43,8 +50,7 @@ export default function Footer() {
       <div
         style={{
           display: "grid",
-          // Switch to 1 column on mobile, 3 columns on desktop
-          gridTemplateColumns: isMobile ? "1fr" : "2fr 1fr 1fr",
+          gridTemplateColumns: isMobile ? "1fr" : "2fr 1fr",
           gap: isMobile ? "32px" : "40px",
           marginBottom: 32,
         }}
@@ -105,7 +111,7 @@ export default function Footer() {
             📱 +91 82336 00439
           </p>
 
-          {/* Social Icons - Flex wrap for mobile screens */}
+          {/* Social Icons */}
           <div
             style={{
               display: "flex",
@@ -115,54 +121,49 @@ export default function Footer() {
               justifyContent: isMobile ? "center" : "flex-start",
             }}
           >
-            {["📘 Facebook", "📸 Instagram", "🐦 Twitter", "▶️ YouTube"].map(
-              (s) => (
-                <a
-                  key={s}
-                  href="#"
-                  style={socialButtonStyle}
-                  onMouseEnter={(e) =>
-                    (e.currentTarget.style.background = "#ff3f6c")
-                  }
-                  onMouseLeave={(e) =>
-                    (e.currentTarget.style.background = "rgba(255,255,255,0.1)")
-                  }
-                >
-                  {s}
-                </a>
-              ),
-            )}
+            {socialLinks.map((s) => (
+              <a
+                key={s.label}
+                href={s.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={socialButtonStyle}
+                onMouseEnter={(e) =>
+                  (e.currentTarget.style.background = "#ff3f6c")
+                }
+                onMouseLeave={(e) =>
+                  (e.currentTarget.style.background = "rgba(255,255,255,0.1)")
+                }
+              >
+                {s.label}
+              </a>
+            ))}
           </div>
         </div>
 
-        {/* Links Columns */}
-        {cols.map((col) => (
-          <div
-            key={col.title}
-            style={{ textAlign: isMobile ? "center" : "left" }}
-          >
-            <h4 style={columnHeaderStyle}>{col.title}</h4>
-            <ul style={{ ...listStyle, padding: 0 }}>
-              {col.links.map((link) => (
-                <li key={link}>
-                  <a
-                    href="#"
-                    style={linkStyle}
-                    onMouseEnter={(e) => (e.target.style.color = "#ff3f6c")}
-                    onMouseLeave={(e) =>
-                      (e.target.style.color = "rgba(255,255,255,0.65)")
-                    }
-                  >
-                    {link}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-        ))}
+        {/* Online Shopping col */}
+        <div style={{ textAlign: isMobile ? "center" : "left" }}>
+          <h4 style={columnHeaderStyle}>ONLINE SHOPPING</h4>
+          <ul style={{ ...listStyle, padding: 0 }}>
+            {shopLinks.map((item) => (
+              <li key={item.label}>
+                <span
+                  onClick={() => handleShopLink(item.tab)}
+                  style={{ ...linkStyle, cursor: "pointer" }}
+                  onMouseEnter={(e) => (e.target.style.color = "#ff3f6c")}
+                  onMouseLeave={(e) =>
+                    (e.target.style.color = "rgba(255,255,255,0.65)")
+                  }
+                >
+                  {item.label}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
 
-      {/* Bottom Bar - Stack on mobile */}
+      {/* Bottom Bar */}
       <div
         style={{
           ...bottomBarStyle,

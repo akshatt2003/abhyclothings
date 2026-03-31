@@ -1,22 +1,26 @@
 import React, { useState, useEffect } from "react";
-import { Search, User, Heart, ShoppingBag, Menu, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import LogoIcon from "../assets/logo.png";
 
 const NAV_CATS = [
-  { name: "MEN", color: "#282c3f" },
-  { name: "WOMEN", color: "#282c3f" },
-  { name: "KIDS", color: "#282c3f" },
-  { name: "HOME & LIVING", color: "#282c3f" },
-  { name: "BEAUTY", color: "#282c3f" },
-  { name: "OFFERS", color: "#ff3f6c" },
+  { name: "MEN", color: "#282c3f", tab: "Men" },
+  { name: "WOMEN", color: "#282c3f", tab: "Women" },
+  { name: "KIDS", color: "#282c3f", tab: "Kids" },
+  { name: "HOME & LIVING", color: "#282c3f", tab: "Home" },
+  { name: "BEAUTY", color: "#282c3f", tab: "Beauty" },
+  { name: "OFFERS", color: "#ff3f6c", tab: "Sale" },
 ];
 
-export default function Navbar({ cartCount = 0, onCartOpen }) {
-  const [search, setSearch] = useState("");
-  const [isFocused, setIsFocused] = useState(false);
+const handleNavClick = (tab, setMenuOpen) => {
+  window.dispatchEvent(new CustomEvent("setProductTab", { detail: tab }));
+  const el = document.getElementById("products");
+  if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+  setMenuOpen(false);
+};
+
+export default function Navbar() {
   const [isMobile, setIsMobile] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [showMobileSearch, setShowMobileSearch] = useState(false);
 
   useEffect(() => {
     const handleResize = () => {
@@ -30,101 +34,46 @@ export default function Navbar({ cartCount = 0, onCartOpen }) {
 
   return (
     <header style={styles.header}>
-      <div style={styles.topBar}>
+      {/* <div style={styles.topBar}>
         <span>
           FLAT ₹400 OFF on your first order. Use Code: <b>WELCOME400</b>
         </span>
-      </div>
+      </div> */}
 
       <nav style={styles.navMain}>
-        {/* Hamburger Menu (Mobile Only) */}
         {isMobile && (
           <div style={styles.menuIcon} onClick={() => setMenuOpen(!menuOpen)}>
             {menuOpen ? <X size={24} /> : <Menu size={24} />}
           </div>
         )}
 
-        {/* Logo Section */}
-        <div style={styles.logoContainer}>
+        <div
+          style={styles.logoContainer}
+          onClick={() => {
+            const el = document.getElementById("hero");
+            if (el) el.scrollIntoView({ behavior: "smooth" });
+          }}
+        >
           <div style={styles.logoWrapper}>
             <img src={LogoIcon} alt="Logo" style={styles.logoImage} />
           </div>
         </div>
 
-        {/* Categories (Desktop Only) */}
         {!isMobile && (
           <div style={styles.catContainer}>
             {NAV_CATS.map((cat) => (
               <div
                 key={cat.name}
                 style={{ ...styles.catItem, color: cat.color }}
+                onClick={() => handleNavClick(cat.tab, setMenuOpen)}
               >
                 {cat.name}
               </div>
             ))}
           </div>
         )}
-
-        {/* Search Bar (Adapts to Mobile) */}
-        {(!isMobile || showMobileSearch) && (
-          <div
-            style={{
-              ...styles.searchWrapper,
-              ...(isMobile ? styles.mobileSearchOverlay : {}),
-              backgroundColor: isFocused ? "#fff" : "#f5f5f6",
-              border: isFocused ? "1px solid #d4d5d9" : "1px solid transparent",
-            }}
-          >
-            <Search size={18} color="#696b79" style={{ marginLeft: 12 }} />
-            <input
-              onFocus={() => setIsFocused(true)}
-              onBlur={() => {
-                setIsFocused(false);
-                if (isMobile) setShowMobileSearch(false);
-              }}
-              autoFocus={isMobile}
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search for products..."
-              style={styles.searchInput}
-            />
-          </div>
-        )}
-
-        {/* Action Icons */}
-        <div style={styles.actions}>
-          {isMobile && (
-            <div
-              style={styles.actionBtn}
-              onClick={() => setShowMobileSearch(true)}
-            >
-              <Search size={22} />
-            </div>
-          )}
-
-          {!isMobile && (
-            <div style={styles.actionBtn}>
-              <User size={20} />
-              <span style={styles.actionText}>Profile</span>
-            </div>
-          )}
-
-          <div style={styles.actionBtn}>
-            <Heart size={isMobile ? 22 : 20} />
-            {!isMobile && <span style={styles.actionText}>Wishlist</span>}
-          </div>
-
-          <div style={styles.actionBtn} onClick={onCartOpen}>
-            <div style={{ position: "relative" }}>
-              <ShoppingBag size={isMobile ? 22 : 20} />
-              {cartCount > 0 && <span style={styles.badge}>{cartCount}</span>}
-            </div>
-            {!isMobile && <span style={styles.actionText}>Bag</span>}
-          </div>
-        </div>
       </nav>
 
-      {/* Mobile Drawer */}
       {isMobile && menuOpen && (
         <>
           <div
@@ -137,7 +86,11 @@ export default function Navbar({ cartCount = 0, onCartOpen }) {
               <X size={20} onClick={() => setMenuOpen(false)} />
             </div>
             {NAV_CATS.map((cat) => (
-              <div key={cat.name} style={styles.drawerItem}>
+              <div
+                key={cat.name}
+                style={styles.drawerItem}
+                onClick={() => handleNavClick(cat.tab, setMenuOpen)}
+              >
                 {cat.name}
               </div>
             ))}
@@ -210,62 +163,6 @@ const styles = {
     cursor: "pointer",
     whiteSpace: "nowrap",
   },
-  searchWrapper: {
-    flex: 1,
-    display: "flex",
-    alignItems: "center",
-    height: "38px",
-    margin: "0 20px",
-    borderRadius: "4px",
-    transition: "all 0.2s ease",
-  },
-  mobileSearchOverlay: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    height: "70px",
-    zIndex: 1100,
-    margin: 0,
-    borderRadius: 0,
-    backgroundColor: "#fff",
-    padding: "0 15px",
-  },
-  searchInput: {
-    width: "100%",
-    border: "none",
-    background: "transparent",
-    outline: "none",
-    padding: "0 12px",
-    fontSize: "14px",
-  },
-  actions: {
-    display: "flex",
-    gap: "18px",
-    alignItems: "center",
-  },
-  actionBtn: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    cursor: "pointer",
-  },
-  actionText: {
-    fontSize: "11px",
-    fontWeight: "700",
-    marginTop: "2px",
-  },
-  badge: {
-    position: "absolute",
-    top: "-6px",
-    right: "-8px",
-    background: "#ff3f6c",
-    color: "#fff",
-    fontSize: "9px",
-    padding: "1px 5px",
-    borderRadius: "10px",
-  },
-  /* Drawer Styles */
   drawerOverlay: {
     position: "fixed",
     top: 0,
@@ -300,5 +197,6 @@ const styles = {
     fontWeight: "700",
     borderBottom: "1px solid #f5f5f6",
     color: "#282c3f",
+    cursor: "pointer",
   },
 };
