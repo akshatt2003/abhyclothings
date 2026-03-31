@@ -35,6 +35,14 @@ export default function Footer() {
       label: "📸 Instagram",
       href: "https://www.instagram.com/ashokkumar.bairwa.106?igsh=dGZ1Nmk2NHh3d3hm",
     },
+    {
+      label: "📸 Youtube",
+      href: "https://www.youtube.com/@ashokgothwal6292",
+    },
+    {
+      label: "🛒 Amazon",
+      href: "https://amzn.in/d/0fniRNSb",
+    },
   ];
 
   return (

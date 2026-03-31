@@ -499,12 +499,8 @@ export function Testimonials() {
    NEWSLETTER
 ───────────────────────────────────────── */
 export function Newsletter() {
-  const [email, setEmail] = useState("");
-  const [done, setDone] = useState(false);
-
   return (
     <section
-      className="newsletter-section"
       style={{
         padding: "70px 4%",
         background: "#1a1a2e",
@@ -523,7 +519,6 @@ export function Newsletter() {
             "radial-gradient(circle, rgba(255,63,108,0.18), transparent 70%)",
           top: "-100px",
           left: "-100px",
-          pointerEvents: "none",
         }}
       />
       <div
@@ -536,7 +531,6 @@ export function Newsletter() {
             "radial-gradient(circle, rgba(255,107,53,0.15), transparent 70%)",
           bottom: "-80px",
           right: "10%",
-          pointerEvents: "none",
         }}
       />
 
@@ -562,6 +556,7 @@ export function Newsletter() {
         >
           STAY IN THE LOOP
         </span>
+
         <h2
           style={{
             fontSize: "clamp(1.6rem, 5vw, 2.4rem)",
@@ -574,82 +569,16 @@ export function Newsletter() {
           Exclusive Deals &<br />
           <span style={{ color: "#ff3f6c" }}>New Arrivals</span> First
         </h2>
+
         <p
           style={{
             color: "rgba(255,255,255,0.5)",
-            marginBottom: "36px",
             fontSize: "clamp(13px, 2vw, 15px)",
             lineHeight: 1.6,
           }}
         >
           Get style tips, sale alerts & festival offers — straight to your inbox
           every week.
-        </p>
-
-        {done ? (
-          <div
-            style={{
-              background: "rgba(3,166,133,0.15)",
-              border: "1px solid rgba(3,166,133,0.3)",
-              borderRadius: "12px",
-              padding: "20px 32px",
-              color: "#03a685",
-              fontWeight: 800,
-              fontSize: "16px",
-            }}
-          >
-            ✅ You're subscribed! Great deals coming soon.
-          </div>
-        ) : (
-          <div className="newsletter-row">
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Enter your email address"
-              style={{
-                flex: 1,
-                padding: "16px 24px",
-                border: "none",
-                fontSize: "14px",
-                outline: "none",
-                color: "#1a1a2e",
-                background: "#fff",
-                fontFamily: "inherit",
-                minWidth: 0, // prevents overflow in flex
-              }}
-            />
-            <button
-              onClick={() => email && setDone(true)}
-              style={{
-                background: "linear-gradient(120deg, #ff3f6c, #ff6b35)",
-                color: "white",
-                padding: "16px 32px",
-                border: "none",
-                cursor: "pointer",
-                fontWeight: 800,
-                fontSize: "13px",
-                letterSpacing: "1px",
-                whiteSpace: "nowrap",
-                fontFamily: "inherit",
-                transition: "opacity 0.2s",
-              }}
-              onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.9")}
-              onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
-            >
-              SUBSCRIBE →
-            </button>
-          </div>
-        )}
-
-        <p
-          style={{
-            marginTop: "16px",
-            fontSize: "12px",
-            color: "rgba(255,255,255,0.25)",
-          }}
-        >
-          No spam. Unsubscribe anytime.
         </p>
       </div>
     </section>

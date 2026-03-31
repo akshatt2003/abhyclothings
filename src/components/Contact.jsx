@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Mail, MessageCircle, User, Camera } from "lucide-react";
+import { Mail, MessageCircle, User, Camera, ShoppingCart } from "lucide-react";
 
 export default function Contact() {
   const [isMobile, setIsMobile] = useState(false);
@@ -74,6 +74,12 @@ export default function Contact() {
             label="Facebook"
             value="Abhy Clothing"
             href="https://www.facebook.com/your-page-url" // Update this link
+          />
+          <ContactCard
+            icon={<ShoppingCart size={24} color="#ff3f6c" />}
+            label="Amazon"
+            value="Abhy Clothing"
+            href="https://amzn.in/d/0fniRNSb" // Update this link
           />
         </div>
       </div>
