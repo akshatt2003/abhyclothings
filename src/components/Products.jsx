@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Heart, Star, ShoppingBag } from "lucide-react"; // Using Lucide for a premium feel
 
 export const PRODUCTS = [
@@ -208,36 +208,37 @@ export const PRODUCTS = [
 
 const TABS = ["All", "Women", "Men", "Kids", "Sale"];
 
-function ProductCard({ product, onAddToCart }) {
+function ProductCard({ product, onAddToCart, isMobile }) {
   const [isWished, setIsWished] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
 
   return (
     <div
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      onMouseEnter={() => !isMobile && setIsHovered(true)}
+      onMouseLeave={() => !isMobile && setIsHovered(false)}
       style={styles.card}
     >
-      {/* Image Container */}
       <div style={styles.imageWrapper}>
         <img src={product.img} alt={product.name} style={styles.image} />
 
-        {/* Wishlist Button */}
         <button
-          onClick={() => setIsWished(!isWished)}
+          onClick={(e) => {
+            e.stopPropagation();
+            setIsWished(!isWished);
+          }}
           style={styles.wishlistBtn}
         >
           <Heart
-            size={20}
+            size={isMobile ? 18 : 20}
             fill={isWished ? "#ff3f6c" : "none"}
             stroke={isWished ? "#ff3f6c" : "#282c3f"}
           />
         </button>
 
-        {/* Rating Badge (Hidden on hover like Myntra) */}
-        {!isHovered && (
+        {/* Rating Badge: Persistent on mobile, hide on hover on desktop */}
+        {(!isHovered || isMobile) && (
           <div style={styles.ratingBadge}>
-            {product.rating} <Star size={12} fill="#14958f" stroke="none" />
+            {product.rating} <Star size={10} fill="#14958f" stroke="none" />
             <span style={styles.separator}>|</span>
             {product.reviews > 1000
               ? (product.reviews / 1000).toFixed(1) + "k"
@@ -245,34 +246,45 @@ function ProductCard({ product, onAddToCart }) {
           </div>
         )}
 
-        {/* Hover Overlay - Add to Bag */}
-        <div
-          style={{
-            ...styles.hoverOverlay,
-            transform: isHovered ? "translateY(0)" : "translateY(100%)",
-            opacity: isHovered ? 1 : 0,
-          }}
-        >
-          <button
-            onClick={() => onAddToCart(product)}
-            style={styles.addToBagBtn}
+        {/* Hover Overlay: Only show on desktop hover. On mobile, we use a different approach or click-to-bag */}
+        {!isMobile && (
+          <div
+            style={{
+              ...styles.hoverOverlay,
+              transform: isHovered ? "translateY(0)" : "translateY(100%)",
+              opacity: isHovered ? 1 : 0,
+            }}
           >
-            <ShoppingBag size={18} /> ADD TO BAG
-          </button>
-        </div>
+            <button
+              onClick={() => onAddToCart(product)}
+              style={styles.addToBagBtn}
+            >
+              <ShoppingBag size={18} /> ADD TO BAG
+            </button>
+          </div>
+        )}
 
         {product.tag && <div style={styles.tag}>{product.tag}</div>}
       </div>
 
-      {/* Details Container */}
       <div style={styles.details}>
         <h3 style={styles.brand}>{product.brand}</h3>
         <p style={styles.name}>{product.name}</p>
         <div style={styles.priceContainer}>
           <span style={styles.price}>₹{product.price}</span>
           <span style={styles.mrp}>₹{product.mrp}</span>
-          <span style={styles.discount}>({product.discount}% OFF)</span>
+          <span style={styles.discount}>{product.discount}% OFF</span>
         </div>
+
+        {/* Mobile-only "Add to Bag" link/button since hover isn't possible */}
+        {isMobile && (
+          <button
+            onClick={() => onAddToCart(product)}
+            style={styles.mobileAddBtn}
+          >
+            Add to Bag
+          </button>
+        )}
       </div>
     </div>
   );
@@ -280,12 +292,53 @@ function ProductCard({ product, onAddToCart }) {
 
 export default function Products({ onAddToCart }) {
   const [activeTab, setActiveTab] = useState("All");
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  // Filter logic (example)
+  const filteredProducts = PRODUCTS.filter(
+    (p) =>
+      activeTab === "All" ||
+      p.category === activeTab ||
+      (activeTab === "Sale" && p.discount > 50),
+  );
 
   return (
-    <section style={styles.section}>
-      <div style={styles.header}>
-        <h2 style={styles.sectionTitle}>TRENDING PRODUCTS</h2>
-        <div style={styles.tabContainer}>
+    <section
+      style={{ ...styles.section, padding: isMobile ? "30px 15px" : "50px 4%" }}
+    >
+      <div
+        style={{
+          ...styles.header,
+          flexDirection: isMobile ? "column" : "row",
+          alignItems: isMobile ? "flex-start" : "center",
+          gap: isMobile ? "15px" : "0",
+        }}
+      >
+        <h2
+          style={{
+            ...styles.sectionTitle,
+            fontSize: isMobile ? "18px" : "24px",
+          }}
+        >
+          {activeTab.toUpperCase()} PRODUCTS
+        </h2>
+
+        <div
+          style={{
+            ...styles.tabContainer,
+            width: isMobile ? "100%" : "auto",
+            overflowX: isMobile ? "auto" : "visible",
+            paddingBottom: isMobile ? "5px" : "0",
+          }}
+          className="hide-scrollbar"
+        >
           {TABS.map((tab) => (
             <button
               key={tab}
@@ -297,6 +350,7 @@ export default function Products({ onAddToCart }) {
                   activeTab === tab
                     ? "2px solid #ff3f6c"
                     : "2px solid transparent",
+                fontSize: isMobile ? "12px" : "14px",
               }}
             >
               {tab}
@@ -305,85 +359,100 @@ export default function Products({ onAddToCart }) {
         </div>
       </div>
 
-      <div style={styles.grid}>
-        {PRODUCTS.map((p) => (
-          <ProductCard key={p.id} product={p} onAddToCart={onAddToCart} />
+      <div
+        style={{
+          ...styles.grid,
+          gridTemplateColumns: isMobile
+            ? "repeat(2, 1fr)" // 2 items per row on mobile
+            : "repeat(auto-fill, minmax(220px, 1fr))",
+        }}
+      >
+        {filteredProducts.map((p) => (
+          <ProductCard
+            key={p.id}
+            product={p}
+            onAddToCart={onAddToCart}
+            isMobile={isMobile}
+          />
         ))}
       </div>
+
+      <style>{`
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+      `}</style>
     </section>
   );
 }
 
 const styles = {
-  section: { padding: "50px 4%", backgroundColor: "#fff" },
+  section: { backgroundColor: "#fff" },
   header: {
     display: "flex",
     justifyContent: "space-between",
-    alignItems: "center",
     marginBottom: "30px",
   },
   sectionTitle: {
-    fontSize: "24px",
     fontWeight: "800",
     color: "#282c3f",
     letterSpacing: "1px",
+    margin: 0,
   },
-  tabContainer: { display: "flex", gap: "20px" },
+  tabContainer: {
+    display: "flex",
+    gap: "20px",
+    whiteSpace: "nowrap",
+  },
   tab: {
     background: "none",
     border: "none",
-    padding: "10px 0",
+    padding: "8px 0",
     cursor: "pointer",
     fontWeight: "700",
-    fontSize: "14px",
     transition: "0.3s",
   },
   grid: {
     display: "grid",
-    gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
-    gap: "30px",
+    gap: "15px", // Tighter gap for mobile
   },
   card: {
     position: "relative",
-    transition: "all 0.3s ease",
+    backgroundColor: "#fff",
   },
   imageWrapper: {
     position: "relative",
     width: "100%",
-    height: "300px",
+    aspectRatio: "3/4", // Maintains fashion photography proportions
     overflow: "hidden",
     backgroundColor: "#f5f5f5",
   },
   image: { width: "100%", height: "100%", objectFit: "cover" },
   wishlistBtn: {
     position: "absolute",
-    top: "12px",
-    right: "12px",
-    background: "#fff",
+    top: "8px",
+    right: "8px",
+    background: "rgba(255,255,255,0.8)",
     border: "none",
     borderRadius: "50%",
-    width: "36px",
-    height: "36px",
+    width: "32px",
+    height: "32px",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    cursor: "pointer",
-    boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
     zIndex: 10,
   },
   ratingBadge: {
     position: "absolute",
-    bottom: "12px",
-    left: "12px",
+    bottom: "8px",
+    left: "8px",
     background: "rgba(255,255,255,0.9)",
-    padding: "4px 8px",
-    borderRadius: "2px",
-    fontSize: "12px",
+    padding: "2px 6px",
+    borderRadius: "20px",
+    fontSize: "10px",
     fontWeight: "700",
     display: "flex",
     alignItems: "center",
-    gap: "4px",
-    color: "#282c3f",
+    gap: "3px",
   },
   separator: { color: "#d4d5d9", margin: "0 2px" },
   hoverOverlay: {
@@ -391,54 +460,66 @@ const styles = {
     bottom: 0,
     left: 0,
     right: 0,
-    height: "50px",
+    height: "40px",
     backgroundColor: "#fff",
     display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    transition: "0.3s ease",
+    zIndex: 5,
   },
   addToBagBtn: {
     width: "100%",
-    height: "100%",
     border: "1px solid #d4d5d9",
     background: "#fff",
-    color: "#282c3f",
     fontWeight: "700",
-    fontSize: "12px",
+    fontSize: "11px",
     cursor: "pointer",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    gap: "8px",
+    gap: "5px",
+  },
+  mobileAddBtn: {
+    marginTop: "8px",
+    width: "100%",
+    padding: "6px",
+    backgroundColor: "transparent",
+    border: "1px solid #ff3f6c",
+    color: "#ff3f6c",
+    borderRadius: "4px",
+    fontSize: "11px",
+    fontWeight: "700",
   },
   tag: {
     position: "absolute",
-    top: "12px",
+    top: "10px",
     left: 0,
     backgroundColor: "#ff3f6c",
     color: "#fff",
-    fontSize: "10px",
+    fontSize: "9px",
     fontWeight: "800",
-    padding: "4px 8px",
+    padding: "3px 6px",
   },
-  details: { padding: "12px 0" },
+  details: { padding: "10px 0" },
   brand: {
-    fontSize: "16px",
+    fontSize: "14px",
     fontWeight: "800",
     color: "#282c3f",
-    margin: "0 0 4px 0",
+    margin: "0 0 2px 0",
   },
   name: {
-    fontSize: "14px",
+    fontSize: "12px",
     color: "#535766",
-    margin: "0 0 8px 0",
+    margin: "0 0 5px 0",
     whiteSpace: "nowrap",
     overflow: "hidden",
     textOverflow: "ellipsis",
   },
-  priceContainer: { display: "flex", alignItems: "center", gap: "8px" },
-  price: { fontWeight: "800", fontSize: "14px", color: "#282c3f" },
-  mrp: { textDecoration: "line-through", color: "#7e818c", fontSize: "12px" },
-  discount: { color: "#ff905a", fontSize: "12px", fontWeight: "700" },
+  priceContainer: {
+    display: "flex",
+    alignItems: "center",
+    gap: "5px",
+    flexWrap: "wrap",
+  },
+  price: { fontWeight: "800", fontSize: "13px" },
+  mrp: { textDecoration: "line-through", color: "#7e818c", fontSize: "11px" },
+  discount: { color: "#ff905a", fontSize: "11px", fontWeight: "700" },
 };

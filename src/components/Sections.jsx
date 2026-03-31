@@ -2,6 +2,81 @@ import React, { useState } from "react";
 import { ArrowRight, Star, Quote } from "lucide-react";
 
 /* ─────────────────────────────────────────
+   RESPONSIVE STYLES (injected once)
+───────────────────────────────────────── */
+const styles = `
+  @import url('https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;600;700;800;900&display=swap');
+
+  .offer-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+  .review-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+  }
+  .newsletter-row {
+    display: flex;
+    border-radius: 50px;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(255,63,108,0.3);
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+
+  @media (max-width: 900px) {
+    .review-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 640px) {
+    .offer-grid {
+      grid-template-columns: 1fr;
+    }
+    .review-grid {
+      grid-template-columns: 1fr;
+    }
+    .offer-banner {
+      height: 240px !important;
+    }
+    .offer-banner h3 {
+      font-size: 28px !important;
+    }
+    .testimonials-header {
+      flex-direction: column !important;
+      align-items: flex-start !important;
+      gap: 16px;
+    }
+    .newsletter-row {
+      flex-direction: column;
+      border-radius: 16px;
+    }
+    .newsletter-row input {
+      border-radius: 12px 12px 0 0 !important;
+    }
+    .newsletter-row button {
+      border-radius: 0 0 12px 12px !important;
+      padding: 14px 24px !important;
+    }
+    .newsletter-section {
+      padding: 48px 5% !important;
+    }
+    .offer-section {
+      padding: 36px 5% !important;
+    }
+    .testimonials-section {
+      padding: 40px 5% !important;
+    }
+  }
+`;
+
+function StyleInjector() {
+  return <style dangerouslySetInnerHTML={{ __html: styles }} />;
+}
+
+/* ─────────────────────────────────────────
    OFFER BANNERS
 ───────────────────────────────────────── */
 export function OfferBanners() {
@@ -11,182 +86,175 @@ export function OfferBanners() {
       offer: "UP TO 70% OFF",
       sub: "Sarees · Kurtas · Lehengas",
       img: "https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?w=800",
-      gradient: "linear-gradient(120deg, #ff3f6c 0%, #ff6b6b 100%)",
+      isLight: true,
     },
     {
       title: "MEN'S CASUALS",
       offer: "STARTING ₹499",
       sub: "Shirts · Trousers · Formals",
       img: "https://images.unsplash.com/photo-1516259762381-22954d7d3ad2?w=800",
-      gradient: "linear-gradient(120deg, #1a1a2e 0%, #282c3f 100%)",
+      isLight: false,
     },
   ];
 
   return (
-    <section
-      style={{
-        padding: "48px 4%",
-        background: "#fafafa",
-        fontFamily: "'Segoe UI', sans-serif",
-      }}
-    >
-      <div
+    <>
+      <StyleInjector />
+      <section
+        className="offer-section"
         style={{
-          textAlign: "center",
-          marginBottom: "32px",
+          padding: "48px 4%",
+          background: "#fafafa",
+          fontFamily: "'Segoe UI', sans-serif",
         }}
       >
-        <span
-          style={{
-            fontSize: "11px",
-            fontWeight: 800,
-            letterSpacing: "4px",
-            color: "#ff3f6c",
-            textTransform: "uppercase",
-          }}
-        >
-          LIMITED TIME
-        </span>
-        <h2
-          style={{
-            fontSize: "28px",
-            fontWeight: 900,
-            color: "#1a1a2e",
-            margin: "6px 0 0",
-          }}
-        >
-          Deals You Can't Miss
-        </h2>
-      </div>
-
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "1fr 1fr",
-          gap: "20px",
-          maxWidth: "1200px",
-          margin: "0 auto",
-        }}
-      >
-        {promos.map((p) => (
-          <div
-            key={p.title}
+        <div style={{ textAlign: "center", marginBottom: "32px" }}>
+          <span
             style={{
-              height: "300px",
-              borderRadius: "16px",
-              overflow: "hidden",
-              position: "relative",
-              cursor: "pointer",
-              boxShadow: "0 12px 40px rgba(0,0,0,0.15)",
-              transition: "transform 0.3s ease, box-shadow 0.3s ease",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.transform = "translateY(-4px)";
-              e.currentTarget.style.boxShadow = "0 20px 50px rgba(0,0,0,0.22)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = "translateY(0)";
-              e.currentTarget.style.boxShadow = "0 12px 40px rgba(0,0,0,0.15)";
+              fontSize: "11px",
+              fontWeight: 800,
+              letterSpacing: "4px",
+              color: "#ff3f6c",
+              textTransform: "uppercase",
             }}
           >
-            {/* Background image */}
-            <img
-              src={p.img}
-              alt={p.title}
-              style={{
-                position: "absolute",
-                inset: 0,
-                width: "100%",
-                height: "100%",
-                objectFit: "cover",
-              }}
-            />
-            {/* Gradient overlay */}
+            LIMITED TIME
+          </span>
+          <h2
+            style={{
+              fontSize: "clamp(20px, 4vw, 28px)",
+              fontWeight: 900,
+              color: "#1a1a2e",
+              margin: "6px 0 0",
+            }}
+          >
+            Deals You Can't Miss
+          </h2>
+        </div>
+
+        <div
+          className="offer-grid"
+          style={{ maxWidth: "1200px", margin: "0 auto" }}
+        >
+          {promos.map((p) => (
             <div
+              key={p.title}
+              className="offer-banner"
               style={{
-                position: "absolute",
-                inset: 0,
-                background: `linear-gradient(to right, ${
-                  p.gradient.includes("ff3f6c")
-                    ? "rgba(255,63,108,0.88)"
-                    : "rgba(26,26,46,0.88)"
-                } 45%, transparent 100%)`,
-              }}
-            />
-            {/* Content */}
-            <div
-              style={{
+                height: "300px",
+                borderRadius: "16px",
+                overflow: "hidden",
                 position: "relative",
-                zIndex: 2,
-                padding: "40px",
-                height: "100%",
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "center",
+                cursor: "pointer",
+                boxShadow: "0 12px 40px rgba(0,0,0,0.15)",
+                transition: "transform 0.3s ease, box-shadow 0.3s ease",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = "translateY(-4px)";
+                e.currentTarget.style.boxShadow =
+                  "0 20px 50px rgba(0,0,0,0.22)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = "translateY(0)";
+                e.currentTarget.style.boxShadow =
+                  "0 12px 40px rgba(0,0,0,0.15)";
               }}
             >
-              <span
+              <img
+                src={p.img}
+                alt={p.title}
                 style={{
-                  fontSize: "11px",
-                  fontWeight: 800,
-                  letterSpacing: "3px",
-                  color: "rgba(255,255,255,0.75)",
-                  textTransform: "uppercase",
-                  marginBottom: "10px",
-                  display: "block",
+                  position: "absolute",
+                  inset: 0,
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
                 }}
-              >
-                {p.title}
-              </span>
-              <h3
+              />
+              <div
                 style={{
-                  fontSize: "38px",
-                  fontWeight: 900,
-                  color: "#fff",
-                  margin: "0 0 6px",
-                  lineHeight: 1,
-                  letterSpacing: "-0.5px",
+                  position: "absolute",
+                  inset: 0,
+                  background: p.isLight
+                    ? "linear-gradient(to right, rgba(255,63,108,0.88) 45%, transparent 100%)"
+                    : "linear-gradient(to right, rgba(26,26,46,0.88) 45%, transparent 100%)",
                 }}
-              >
-                {p.offer}
-              </h3>
-              <p
+              />
+              <div
                 style={{
-                  fontSize: "13px",
-                  color: "rgba(255,255,255,0.7)",
-                  marginBottom: "24px",
-                  letterSpacing: "1px",
-                }}
-              >
-                {p.sub}
-              </p>
-              <button
-                style={{
-                  width: "fit-content",
-                  padding: "12px 28px",
-                  background: "#fff",
-                  color: "#1a1a2e",
-                  border: "none",
-                  borderRadius: "50px",
-                  fontWeight: 800,
-                  fontSize: "12px",
-                  letterSpacing: "1px",
+                  position: "relative",
+                  zIndex: 2,
+                  padding: "clamp(24px, 5%, 40px)",
+                  height: "100%",
                   display: "flex",
-                  alignItems: "center",
-                  gap: "8px",
-                  cursor: "pointer",
-                  transition: "gap 0.2s",
+                  flexDirection: "column",
+                  justifyContent: "center",
+                  boxSizing: "border-box",
                 }}
-                onMouseEnter={(e) => (e.currentTarget.style.gap = "14px")}
-                onMouseLeave={(e) => (e.currentTarget.style.gap = "8px")}
               >
-                SHOP NOW <ArrowRight size={14} />
-              </button>
+                <span
+                  style={{
+                    fontSize: "11px",
+                    fontWeight: 800,
+                    letterSpacing: "3px",
+                    color: "rgba(255,255,255,0.75)",
+                    textTransform: "uppercase",
+                    marginBottom: "10px",
+                    display: "block",
+                  }}
+                >
+                  {p.title}
+                </span>
+                <h3
+                  style={{
+                    fontSize: "clamp(24px, 4vw, 38px)",
+                    fontWeight: 900,
+                    color: "#fff",
+                    margin: "0 0 6px",
+                    lineHeight: 1,
+                    letterSpacing: "-0.5px",
+                  }}
+                >
+                  {p.offer}
+                </h3>
+                <p
+                  style={{
+                    fontSize: "13px",
+                    color: "rgba(255,255,255,0.7)",
+                    marginBottom: "24px",
+                    letterSpacing: "1px",
+                  }}
+                >
+                  {p.sub}
+                </p>
+                <button
+                  style={{
+                    width: "fit-content",
+                    padding: "12px 28px",
+                    background: "#fff",
+                    color: "#1a1a2e",
+                    border: "none",
+                    borderRadius: "50px",
+                    fontWeight: 800,
+                    fontSize: "12px",
+                    letterSpacing: "1px",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "8px",
+                    cursor: "pointer",
+                    transition: "gap 0.2s",
+                  }}
+                  onMouseEnter={(e) => (e.currentTarget.style.gap = "14px")}
+                  onMouseLeave={(e) => (e.currentTarget.style.gap = "8px")}
+                >
+                  SHOP NOW <ArrowRight size={14} />
+                </button>
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
-    </section>
+          ))}
+        </div>
+      </section>
+    </>
   );
 }
 
@@ -227,14 +295,15 @@ export function Testimonials() {
 
   return (
     <section
+      className="testimonials-section"
       style={{
         padding: "60px 4%",
         background: "#fff",
         fontFamily: "'Segoe UI', sans-serif",
       }}
     >
-      {/* Header */}
       <div
+        className="testimonials-header"
         style={{
           display: "flex",
           alignItems: "flex-end",
@@ -257,7 +326,7 @@ export function Testimonials() {
           </span>
           <h2
             style={{
-              fontSize: "28px",
+              fontSize: "clamp(20px, 4vw, 28px)",
               fontWeight: 900,
               color: "#1a1a2e",
               margin: "6px 0 0",
@@ -274,6 +343,7 @@ export function Testimonials() {
             background: "#f5f5f6",
             padding: "10px 20px",
             borderRadius: "50px",
+            flexShrink: 0,
           }}
         >
           <span
@@ -294,15 +364,9 @@ export function Testimonials() {
         </div>
       </div>
 
-      {/* Cards */}
       <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(4, 1fr)",
-          gap: "20px",
-          maxWidth: "1200px",
-          margin: "0 auto",
-        }}
+        className="review-grid"
+        style={{ maxWidth: "1200px", margin: "0 auto" }}
       >
         {reviews.map((r, i) => (
           <div
@@ -326,7 +390,6 @@ export function Testimonials() {
               e.currentTarget.style.boxShadow = "0 4px 20px rgba(0,0,0,0.05)";
             }}
           >
-            {/* Quote icon */}
             <Quote
               size={28}
               style={{
@@ -337,14 +400,7 @@ export function Testimonials() {
                 right: "20px",
               }}
             />
-            {/* Stars */}
-            <div
-              style={{
-                display: "flex",
-                gap: "3px",
-                marginBottom: "14px",
-              }}
-            >
+            <div style={{ display: "flex", gap: "3px", marginBottom: "14px" }}>
               {[...Array(5)].map((_, j) => (
                 <Star
                   key={j}
@@ -354,7 +410,6 @@ export function Testimonials() {
                 />
               ))}
             </div>
-            {/* Text */}
             <p
               style={{
                 fontSize: "13.5px",
@@ -366,7 +421,6 @@ export function Testimonials() {
             >
               {r.text}
             </p>
-            {/* Order tag */}
             <div
               style={{
                 fontSize: "11px",
@@ -382,7 +436,6 @@ export function Testimonials() {
             >
               📦 {r.order}
             </div>
-            {/* Divider */}
             <div
               style={{
                 borderTop: "1px solid #f5f5f6",
@@ -451,6 +504,7 @@ export function Newsletter() {
 
   return (
     <section
+      className="newsletter-section"
       style={{
         padding: "70px 4%",
         background: "#1a1a2e",
@@ -459,7 +513,6 @@ export function Newsletter() {
         overflow: "hidden",
       }}
     >
-      {/* Decorative blobs */}
       <div
         style={{
           position: "absolute",
@@ -511,7 +564,7 @@ export function Newsletter() {
         </span>
         <h2
           style={{
-            fontSize: "clamp(1.6rem, 3vw, 2.4rem)",
+            fontSize: "clamp(1.6rem, 5vw, 2.4rem)",
             fontWeight: 900,
             color: "#fff",
             marginBottom: "12px",
@@ -525,7 +578,7 @@ export function Newsletter() {
           style={{
             color: "rgba(255,255,255,0.5)",
             marginBottom: "36px",
-            fontSize: "15px",
+            fontSize: "clamp(13px, 2vw, 15px)",
             lineHeight: 1.6,
           }}
         >
@@ -548,15 +601,7 @@ export function Newsletter() {
             ✅ You're subscribed! Great deals coming soon.
           </div>
         ) : (
-          <div
-            style={{
-              display: "flex",
-              borderRadius: "50px",
-              overflow: "hidden",
-              boxShadow: "0 8px 32px rgba(255,63,108,0.3)",
-              border: "1px solid rgba(255,255,255,0.08)",
-            }}
-          >
+          <div className="newsletter-row">
             <input
               type="email"
               value={email}
@@ -571,6 +616,7 @@ export function Newsletter() {
                 color: "#1a1a2e",
                 background: "#fff",
                 fontFamily: "inherit",
+                minWidth: 0, // prevents overflow in flex
               }}
             />
             <button
@@ -609,3 +655,7 @@ export function Newsletter() {
     </section>
   );
 }
+
+/* ─────────────────────────────────────────
+   DEMO PAGE
+───────────────────────────────────────── */

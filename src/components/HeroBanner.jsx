@@ -46,38 +46,64 @@ const SLIDES = [
 
 export default function HeroBanner() {
   const [active, setActive] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
 
+  // Handle responsiveness via JS for inline-style control
   useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    handleResize();
+    window.addEventListener("resize", handleResize);
+
     const timer = setInterval(() => {
       setActive((prev) => (prev + 1) % SLIDES.length);
     }, 5000);
-    return () => clearInterval(timer);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      clearInterval(timer);
+    };
   }, []);
 
   const slide = SLIDES[active];
 
   return (
-    <div style={{ fontFamily: "Inter, sans-serif", overflow: "hidden" }}>
+    <div
+      style={{
+        fontFamily: "Inter, sans-serif",
+        overflow: "hidden",
+        backgroundColor: "#fff",
+      }}
+    >
       {/* Main Hero Section */}
       <div
         style={{
           position: "relative",
-          height: "520px",
+          height: isMobile ? "auto" : "520px",
+          minHeight: isMobile ? "600px" : "520px",
           backgroundColor: slide.bg,
           transition: "background-color 0.8s ease",
           display: "flex",
+          flexDirection: isMobile ? "column" : "row",
           alignItems: "center",
-          padding: "0 8%",
+          padding: isMobile ? "40px 5% 60px 5%" : "0 8%",
+          textAlign: isMobile ? "center" : "left",
         }}
       >
         {/* Animated Text Content */}
-        <div style={{ flex: 1, zIndex: 2, maxWidth: "600px" }}>
+        <div
+          style={{
+            flex: 1,
+            zIndex: 2,
+            maxWidth: isMobile ? "100%" : "600px",
+            marginTop: isMobile ? "20px" : "0",
+          }}
+        >
           <AnimatePresence mode="wait">
             <motion.div
               key={active}
-              initial={{ opacity: 0, x: -30 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 20 }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.5 }}
             >
               <span
@@ -85,7 +111,7 @@ export default function HeroBanner() {
                   color: slide.accent,
                   fontWeight: 800,
                   letterSpacing: "3px",
-                  fontSize: "13px",
+                  fontSize: isMobile ? "11px" : "13px",
                   display: "block",
                   marginBottom: "15px",
                 }}
@@ -95,11 +121,11 @@ export default function HeroBanner() {
 
               <h1
                 style={{
-                  fontSize: "clamp(2.5rem, 5vw, 4.5rem)",
+                  fontSize: isMobile ? "2.5rem" : "clamp(2.5rem, 5vw, 4.5rem)",
                   fontWeight: 900,
                   color: "#282c3f",
                   margin: "0 0 10px 0",
-                  lineHeight: 1,
+                  lineHeight: 1.1,
                 }}
               >
                 {slide.title}
@@ -107,9 +133,9 @@ export default function HeroBanner() {
 
               <h2
                 style={{
-                  fontSize: "24px",
+                  fontSize: isMobile ? "18px" : "24px",
                   color: "#535766",
-                  marginBottom: "20px",
+                  marginBottom: "15px",
                   fontWeight: 400,
                 }}
               >
@@ -119,8 +145,10 @@ export default function HeroBanner() {
               <p
                 style={{
                   color: "#7e818c",
-                  marginBottom: "35px",
-                  fontSize: "18px",
+                  marginBottom: "30px",
+                  fontSize: isMobile ? "15px" : "18px",
+                  maxWidth: isMobile ? "300px" : "none",
+                  marginInline: isMobile ? "auto" : "0",
                 }}
               >
                 {slide.desc}
@@ -130,7 +158,7 @@ export default function HeroBanner() {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 style={{
-                  padding: "16px 40px",
+                  padding: isMobile ? "14px 30px" : "16px 40px",
                   backgroundColor: "#282c3f",
                   color: "#fff",
                   border: "none",
@@ -139,7 +167,9 @@ export default function HeroBanner() {
                   cursor: "pointer",
                   display: "flex",
                   alignItems: "center",
+                  justifyContent: "center",
                   gap: "10px",
+                  marginInline: isMobile ? "auto" : "0",
                   boxShadow: "0 10px 20px rgba(0,0,0,0.1)",
                 }}
               >
@@ -153,23 +183,26 @@ export default function HeroBanner() {
         <div
           style={{
             flex: 1,
-            height: "100%",
+            height: isMobile ? "300px" : "100%",
+            width: "100%",
             display: "flex",
             alignItems: "flex-end",
             justifyContent: "center",
             position: "relative",
+            marginTop: isMobile ? "30px" : "0",
           }}
         >
           <AnimatePresence mode="wait">
             <motion.img
               key={active}
               src={slide.img}
-              initial={{ opacity: 0, scale: 0.9, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 1.1 }}
               transition={{ duration: 0.6 }}
               style={{
-                height: "90%",
+                height: "100%",
+                maxWidth: "100%",
                 objectFit: "contain",
                 filter: "drop-shadow(20px 10px 30px rgba(0,0,0,0.15))",
               }}
@@ -181,10 +214,12 @@ export default function HeroBanner() {
         <div
           style={{
             position: "absolute",
-            bottom: "30px",
-            left: "8%",
+            bottom: "20px",
+            left: isMobile ? "50%" : "8%",
+            transform: isMobile ? "translateX(-50%)" : "none",
             display: "flex",
             gap: "12px",
+            zIndex: 10,
           }}
         >
           {SLIDES.map((_, i) => (
@@ -194,7 +229,7 @@ export default function HeroBanner() {
               style={{
                 width: i === active ? "40px" : "10px",
                 height: "6px",
-                backgroundColor: i === active ? "#282c3f" : "rgba(0,0,0,0.1)",
+                backgroundColor: i === active ? "#282c3f" : "rgba(0,0,0,0.2)",
                 borderRadius: "10px",
                 cursor: "pointer",
                 transition: "all 0.4s ease",
@@ -208,49 +243,63 @@ export default function HeroBanner() {
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(4, 1fr)",
-          padding: "30px 8%",
+          gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(4, 1fr)",
+          gap: isMobile ? "20px" : "10px",
+          padding: isMobile ? "30px 5%" : "30px 8%",
           background: "#fff",
           borderBottom: "1px solid #f5f5f6",
         }}
       >
         <FeatureItem
-          icon={<Truck size={24} color="#ff3f6c" />}
+          icon={<Truck size={isMobile ? 20 : 24} color="#ff3f6c" />}
           title="Free Shipping"
-          desc="On orders above ₹799"
+          desc="Above ₹799"
+          isMobile={isMobile}
         />
         <FeatureItem
-          icon={<RotateCcw size={24} color="#ff3f6c" />}
+          icon={<RotateCcw size={isMobile ? 20 : 24} color="#ff3f6c" />}
           title="Easy Returns"
-          desc="30-day return policy"
+          desc="30-day policy"
+          isMobile={isMobile}
         />
         <FeatureItem
-          icon={<CreditCard size={24} color="#ff3f6c" />}
+          icon={<CreditCard size={isMobile ? 20 : 24} color="#ff3f6c" />}
           title="Secure Pay"
-          desc="UPI & COD available"
+          desc="UPI/COD"
+          isMobile={isMobile}
         />
         <FeatureItem
-          icon={<ShieldCheck size={24} color="#ff3f6c" />}
+          icon={<ShieldCheck size={isMobile ? 20 : 24} color="#ff3f6c" />}
           title="100% Original"
-          desc="Direct from brands"
+          desc="Direct brands"
+          isMobile={isMobile}
         />
       </div>
     </div>
   );
 }
 
-function FeatureItem({ icon, title, desc }) {
+function FeatureItem({ icon, title, desc, isMobile }) {
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: "15px" }}>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: isMobile ? "column" : "row",
+        alignItems: isMobile ? "center" : "center",
+        gap: isMobile ? "10px" : "15px",
+        textAlign: isMobile ? "center" : "left",
+      }}
+    >
       <div
         style={{
-          width: "48px",
-          height: "48px",
+          width: isMobile ? "40px" : "48px",
+          height: isMobile ? "40px" : "48px",
           borderRadius: "50%",
           backgroundColor: "#fff1f4",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
+          flexShrink: 0,
         }}
       >
         {icon}
@@ -259,14 +308,23 @@ function FeatureItem({ icon, title, desc }) {
         <h4
           style={{
             margin: 0,
-            fontSize: "14px",
+            fontSize: isMobile ? "12px" : "14px",
             fontWeight: 700,
             color: "#282c3f",
+            whiteSpace: "nowrap",
           }}
         >
           {title}
         </h4>
-        <p style={{ margin: 0, fontSize: "12px", color: "#7e818c" }}>{desc}</p>
+        <p
+          style={{
+            margin: 0,
+            fontSize: isMobile ? "10px" : "12px",
+            color: "#7e818c",
+          }}
+        >
+          {desc}
+        </p>
       </div>
     </div>
   );

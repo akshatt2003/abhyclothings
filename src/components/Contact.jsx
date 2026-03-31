@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Mail, Send, MessageCircle, User } from "lucide-react";
 
 export default function Contact() {
@@ -10,6 +10,15 @@ export default function Contact() {
   });
   const [sent, setSent] = useState(false);
   const [focusedField, setFocusedField] = useState(null);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Handle screen resize
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 992);
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -17,13 +26,38 @@ export default function Contact() {
   };
 
   return (
-    <section id="contact" style={styles.section}>
-      <div style={styles.container}>
+    <section
+      id="contact"
+      style={{
+        ...styles.section,
+        padding: isMobile ? "60px 5%" : "80px 4%",
+      }}
+    >
+      <div
+        style={{
+          ...styles.container,
+          gridTemplateColumns: isMobile ? "1fr" : "1.2fr 1fr",
+          gap: isMobile ? "40px" : "60px",
+        }}
+      >
         {/* Left Side: Contact Info */}
         <div style={styles.infoColumn}>
           <div style={styles.badge}>SUPPORT CENTER</div>
-          <h2 style={styles.heading}>Get in Touch with Us</h2>
-          <p style={styles.subtext}>
+          <h2
+            style={{
+              ...styles.heading,
+              fontSize: isMobile ? "28px" : "36px",
+            }}
+          >
+            Get in Touch with Us
+          </h2>
+          <p
+            style={{
+              ...styles.subtext,
+              fontSize: isMobile ? "15px" : "16px",
+              marginBottom: isMobile ? "30px" : "40px",
+            }}
+          >
             Have a question about your order or need style advice? Our dedicated
             team is ready to assist you.
           </p>
@@ -55,7 +89,12 @@ export default function Contact() {
 
         {/* Right Side: Form */}
         <div style={styles.formColumn}>
-          <div style={styles.formCard}>
+          <div
+            style={{
+              ...styles.formCard,
+              padding: isMobile ? "25px" : "40px",
+            }}
+          >
             <h3 style={styles.formTitle}>Send a Message</h3>
             {sent ? (
               <SuccessState />
@@ -129,7 +168,7 @@ const ContactCard = ({ icon, label, value, note }) => (
     <div>
       <div style={styles.itemLabel}>{label}</div>
       <div style={styles.itemValue}>{value}</div>
-      <div style={styles.itemNote}>{note}</div>
+      {note && <div style={styles.itemNote}>{note}</div>}
     </div>
   </div>
 );
@@ -146,7 +185,6 @@ const SuccessState = () => (
 
 const styles = {
   section: {
-    padding: "80px 4%",
     background: "#fff",
     borderBottom: "1px solid #eaeaec",
   },
@@ -154,8 +192,6 @@ const styles = {
     maxWidth: "1100px",
     margin: "0 auto",
     display: "grid",
-    gridTemplateColumns: "1.2fr 1fr",
-    gap: "60px",
     alignItems: "center",
   },
   badge: {
@@ -166,7 +202,6 @@ const styles = {
     marginBottom: "16px",
   },
   heading: {
-    fontSize: "36px",
     fontWeight: 900,
     color: "#282c3f",
     marginBottom: "16px",
@@ -175,14 +210,12 @@ const styles = {
   subtext: {
     color: "#7e818c",
     lineHeight: 1.6,
-    fontSize: "16px",
-    marginBottom: "40px",
   },
   contactList: { display: "flex", flexDirection: "column", gap: "24px" },
-  contactItem: { display: "flex", gap: "20px", alignItems: "center" },
+  contactItem: { display: "flex", gap: "15px", alignItems: "center" },
   iconBox: {
-    width: "50px",
-    height: "50px",
+    width: "48px",
+    height: "48px",
     background: "#fff1f4",
     borderRadius: "12px",
     display: "flex",
@@ -191,18 +224,22 @@ const styles = {
     flexShrink: 0,
   },
   itemLabel: {
-    fontSize: "12px",
+    fontSize: "11px",
     color: "#9496a5",
     fontWeight: 700,
     textTransform: "uppercase",
   },
-  itemValue: { fontSize: "16px", fontWeight: 700, color: "#282c3f" },
+  itemValue: {
+    fontSize: "15px",
+    fontWeight: 700,
+    color: "#282c3f",
+    wordBreak: "break-all",
+  },
   itemNote: { fontSize: "13px", color: "#ff3f6c" },
   formCard: {
     background: "#fff",
-    padding: "40px",
     borderRadius: "16px",
-    boxShadow: "0 20px 40px rgba(0,0,0,0.08)",
+    boxShadow: "0 15px 35px rgba(0,0,0,0.06)",
     border: "1px solid #f5f5f6",
   },
   formTitle: {
@@ -211,7 +248,7 @@ const styles = {
     marginBottom: "24px",
     color: "#282c3f",
   },
-  form: { display: "flex", flexDirection: "column", gap: "20px" },
+  form: { display: "flex", flexDirection: "column", gap: "16px" },
   inputGroup: { display: "flex", flexDirection: "column", gap: "12px" },
   input: {
     padding: "14px",
@@ -245,21 +282,21 @@ const styles = {
     gap: "10px",
     transition: "0.3s",
   },
-  successContainer: { textAlign: "center", padding: "20px" },
+  successContainer: { textAlign: "center", padding: "10px" },
   successIcon: {
-    width: "60px",
-    height: "60px",
+    width: "50px",
+    height: "50px",
     background: "#03a685",
     color: "#fff",
     borderRadius: "50%",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    margin: "0 auto 20px",
-    fontSize: "30px",
+    margin: "0 auto 15px",
+    fontSize: "24px",
   },
   successTitle: {
-    fontSize: "22px",
+    fontSize: "20px",
     fontWeight: 800,
     color: "#282c3f",
     marginBottom: "10px",

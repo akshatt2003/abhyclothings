@@ -1,6 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
-// Real product images make a huge difference in "attractiveness"
 const CATS = [
   {
     img: "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=200",
@@ -50,45 +49,70 @@ const CATS = [
 ];
 
 export default function Categories() {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   return (
-    <section style={styles.section}>
+    <section
+      style={{ ...styles.section, padding: isMobile ? "25px 0" : "40px 0" }}
+    >
       <div style={styles.header}>
         <div>
-          <h2 style={styles.title}>SHOP BY CATEGORY</h2>
+          <h2 style={{ ...styles.title, fontSize: isMobile ? "15px" : "18px" }}>
+            SHOP BY CATEGORY
+          </h2>
           <div style={styles.underline}></div>
         </div>
-        <a href="#" style={styles.viewAll}>
+        <a
+          href="#"
+          style={{ ...styles.viewAll, fontSize: isMobile ? "11px" : "13px" }}
+        >
           VIEW ALL
         </a>
       </div>
 
       <div style={styles.scrollContainer} className="hide-scrollbar">
         {CATS.map((cat, idx) => (
-          <CategoryItem key={idx} cat={cat} />
+          <CategoryItem key={idx} cat={cat} isMobile={isMobile} />
         ))}
       </div>
 
-      {/* Adding a simple global style to hide scrollbars while keeping functionality */}
       <style>{`
         .hide-scrollbar::-webkit-scrollbar { display: none; }
-        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .hide-scrollbar { 
+          -ms-overflow-style: none; 
+          scrollbar-width: none; 
+          -webkit-overflow-scrolling: touch; /* Smooth momentum scroll for iOS */
+        }
       `}</style>
     </section>
   );
 }
 
-function CategoryItem({ cat }) {
+function CategoryItem({ cat, isMobile }) {
   const [isHovered, setIsHovered] = useState(false);
+
+  // Shrink items slightly on mobile to show more of the horizontal list
+  const itemSize = isMobile ? "80px" : "110px";
+  const imgSize = isMobile ? "65px" : "90px";
 
   return (
     <div
-      style={styles.item}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      style={{ ...styles.item, width: itemSize }}
+      onMouseEnter={() => !isMobile && setIsHovered(true)}
+      onMouseLeave={() => !isMobile && setIsHovered(false)}
     >
       <div
         style={{
           ...styles.imageWrapper,
+          width: imgSize,
+          height: imgSize,
           borderColor: isHovered ? "#ff3f6c" : "transparent",
           transform: isHovered ? "translateY(-5px)" : "translateY(0)",
         }}
@@ -106,12 +130,17 @@ function CategoryItem({ cat }) {
         <span
           style={{
             ...styles.label,
+            fontSize: isMobile ? "11px" : "13px",
             color: isHovered ? "#ff3f6c" : "#282c3f",
           }}
         >
           {cat.label}
         </span>
-        <span style={styles.subText}>{cat.sub}</span>
+        <span
+          style={{ ...styles.subText, fontSize: isMobile ? "9px" : "11px" }}
+        >
+          {cat.sub}
+        </span>
       </div>
     </div>
   );
@@ -119,7 +148,6 @@ function CategoryItem({ cat }) {
 
 const styles = {
   section: {
-    padding: "40px 0",
     backgroundColor: "#ffffff",
     borderBottom: "1px solid #eaeaec",
   },
@@ -128,23 +156,21 @@ const styles = {
     alignItems: "center",
     justifyContent: "space-between",
     padding: "0 4%",
-    marginBottom: "30px",
+    marginBottom: "20px",
   },
   title: {
-    fontSize: "18px",
     fontWeight: "800",
     color: "#282c3f",
     letterSpacing: "1px",
     margin: 0,
   },
   underline: {
-    width: "40px",
+    width: "30px",
     height: "3px",
     backgroundColor: "#ff3f6c",
     marginTop: "4px",
   },
   viewAll: {
-    fontSize: "13px",
     fontWeight: "700",
     color: "#ff3f6c",
     textDecoration: "none",
@@ -154,7 +180,7 @@ const styles = {
     display: "flex",
     overflowX: "auto",
     padding: "10px 4%",
-    gap: "25px",
+    gap: "20px",
     scrollBehavior: "smooth",
   },
   item: {
@@ -163,15 +189,12 @@ const styles = {
     alignItems: "center",
     cursor: "pointer",
     flexShrink: 0,
-    width: "110px",
   },
   imageWrapper: {
-    width: "90px",
-    height: "90px",
     borderRadius: "50%",
     overflow: "hidden",
     border: "2px solid transparent",
-    padding: "3px", // Space for the "ring" effect
+    padding: "2px",
     transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
     backgroundColor: "#fff",
     boxShadow: "0 4px 10px rgba(0,0,0,0.05)",
@@ -185,19 +208,19 @@ const styles = {
   },
   textContainer: {
     textAlign: "center",
-    marginTop: "12px",
+    marginTop: "8px",
   },
   label: {
     display: "block",
-    fontSize: "13px",
     fontWeight: "700",
     letterSpacing: "0.3px",
     transition: "color 0.2s",
+    whiteSpace: "nowrap",
   },
   subText: {
     display: "block",
-    fontSize: "11px",
     color: "#7e818c",
-    marginTop: "2px",
+    marginTop: "1px",
+    whiteSpace: "nowrap",
   },
 };
